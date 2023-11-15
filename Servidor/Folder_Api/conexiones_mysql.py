@@ -14,7 +14,7 @@ db_params = {
 
 # Crear un pool de conexiones sin límite superior
 connection_pool = pooling.MySQLConnectionPool(pool_name="pool",
-                                              pool_size=None,  # Sin límite superior
+                                              pool_size=None,
                                               **db_params)
 
 def ejecutar_consulta(query):
@@ -31,11 +31,10 @@ def ejecutar_consulta(query):
         connection.commit()
 
     except Exception as e:
-
         print(f"Error: {e}")
         connection.rollback()
+
     finally:
-        # Devolver la conexión al pool
         connection.close()
 
 # Ejemplos
