@@ -16,19 +16,19 @@ RESET='\e[0m'
 PORT=5000
 
 
-PORT_RESULT=$(netstat -lpn | grep :$PORT )
+PORT_RESULT=$(lsof -t -i :$PORT )
 
 startup(){    
     #Funcion para inicializar la Api
 
-    nohup python3 api.py &
+    nohup python3 /home/alex/Github/Nimbu/Servidor/Folder_Api/api.py > /home/alex/logs/log.txt &
     echo -e "Iniciando la Api"
     if [ -z "$PORT_RESULT" ]; then
 
-        echo -e "Api START[${ROJO}FAILED${RESET}]"  
+        echo -e "Api START[${VERDE}GOOD${RESET}]"  
     else
 
-        echo -e "Api START[${VERDE}GOOD${RESET}]"
+        echo -e "Api START[${ROJO}FAILED${RESET}]"
     fi
 }
 
@@ -80,7 +80,3 @@ elif [ $1 == "-a" ];then
     startup
 
 fi
-
-
-
-
