@@ -14,7 +14,7 @@ db_params = {
 
 # Crear un pool de conexiones sin límite superior
 connection_pool = pooling.MySQLConnectionPool(pool_name="pool",
-                                              pool_size=35,
+                                              pool_size=32,
                                               **db_params)
 
 def ejecutar_consulta(query):
