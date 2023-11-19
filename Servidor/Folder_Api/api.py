@@ -10,7 +10,7 @@ import conexiones_mysql
 
 
 
-tree = ET.parse('datos.xml')
+tree = ET.parse('/home/alex/Github/Nimbu/Servidor/Folder_Api/datos.xml')
 root = tree.getroot()
 
 
