@@ -32,7 +32,7 @@ def checker():
     """Check de la conexion al servidor y la version de la Api
 
     Returns:
-        string: 1 --> Version local de la Api 
+        string: GOOD --> Correcto funcionamiento de la api
     """
     return 'GOOD'
 
