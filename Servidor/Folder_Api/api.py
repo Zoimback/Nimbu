@@ -67,7 +67,7 @@ def obtener():
         tiempo2 = tiempo2 + timedelta(days=1)
 
     #fechahoy= date.today().strftime("%Y-%m-%d")
-    query = f"SELECT ESP, TEMP, DATE FROM Datos WHERE DATE >= '{tiempo1}' AND DATE <= '{tiempo2}' AND ESP = '{nombresensor}'"
+    query = f"SELECT ESP, TEMP, DATE FROM Datos WHERE ESP = '{nombresensor}'"
     resultado=conexiones_mysql.ejecutar_consulta(query)
     return resultado
 
