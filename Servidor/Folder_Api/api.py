@@ -6,7 +6,7 @@
 
 from datetime import date, timedelta
 import xml.etree.ElementTree as ET
-from flask import Flask, request
+from flask import Flask, request, jsonify
 import conexiones_mysql
 
 
@@ -55,6 +55,8 @@ def insercion():
 @app.route('/obtain', methods=['GET'])
 def obtener():
     """Método para obtener datos que correspondan con los valores. 
+        tiempo1 --> Fecha mayor
+        tiempo2 --> Fecha menor
 
     Returns:
         JSON: GOOD / BAD (strings)
@@ -65,11 +67,26 @@ def obtener():
 
     if tiempo1 == tiempo2 :
         tiempo2 = tiempo2 + timedelta(days=1)
+    elif tiempo1 < tiempo2:
+        return "BAD, Date error" 
 
     #fechahoy= date.today().strftime("%Y-%m-%d")
-    query = f"SELECT ESP, TEMP, DATE FROM Datos WHERE ESP = '{nombresensor}'"
-    resultado=conexiones_mysql.ejecutar_consulta(query)
-    return resultado
+    query = f" SELECT ESP, TEMP, DATE FROM Datos WHERE DATE >= '{tiempo1}' AND DATE <= '{tiempo2}'  AND '{nombresensor}' = ESP;"
+    resultados=conexiones_mysql.ejecutar_consulta(query)
+
+    # Convertir los resultados a una lista de diccionarios para jsonify
+    lista_resultados = []
+    for resultado in resultados:
+        diccionario_resultado = {
+            'ESP': resultado[0],
+            'TEMPERATURA': resultado[1],
+            'FECHA':resultado[2]
+        }
+    lista_resultados.append(diccionario_resultado)
+
+    # Retornar los datos como JSON
+    return jsonify(lista_resultados)
+
 
 
 # Punto de entrada de la aplicación
