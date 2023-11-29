@@ -80,12 +80,12 @@ def obtener():
         diccionario_resultado = {
             'ESP': resultado[0],
             'TEMPERATURA': resultado[1],
-            'FECHA':resultado[2]
+            'FECHA': resultado[2].strftime("%Y-%m-%d")  # Formatear la fecha si es necesario
         }
-    lista_resultados.append(diccionario_resultado)
+        lista_resultados.append(diccionario_resultado)
 
     # Retornar los datos como JSON
-    return jsonify(lista_resultados)
+    return jsonify({"status": "GOOD", "data": lista_resultados})
 
 
 
