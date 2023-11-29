@@ -4,10 +4,10 @@
     Hecho por: Alejandro Rodríguez González.
 """
 
+from datetime import date, timedelta
 import xml.etree.ElementTree as ET
 from flask import Flask, request
 import conexiones_mysql
-
 
 
 tree = ET.parse('/home/alex/Github/Nimbu/Servidor/Folder_Api/datos.xml')
@@ -51,6 +51,25 @@ def insercion():
         return "GOOD"
     return "BAD"
 
+
+@app.route('/obtain', methods=['GET'])
+def obtener():
+    """Método para obtener datos que correspondan con los valores. 
+
+    Returns:
+        JSON: GOOD / BAD (strings)
+    """
+    tiempo1=request.json['tiempo1']
+    tiempo2=request.json["tiempo2"]
+    nombresensor=request.json["sensor"]
+
+    if tiempo1 == tiempo2 :
+        tiempo2 = tiempo2 + timedelta(days=1)
+
+    #fechahoy= date.today().strftime("%Y-%m-%d")
+    query = f"SELECT ESP, TEMP, DATE FROM Datos WHERE  DATE >='{tiempo1}' and DATE <= '{tiempo2} and ESP = '{nombresensor}')"
+    resultado=conexiones_mysql.ejecutar_consulta(query)
+    return resultado
 
 
 # Punto de entrada de la aplicación
