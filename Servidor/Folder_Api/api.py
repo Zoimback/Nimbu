@@ -47,7 +47,7 @@ def insercion():
     dato_temperatura=request.json["temp"]
     if(dato_temperatura <= maximo)or(dato_temperatura >= minimo):
         query = f"INSERT INTO Datos (ESP, TEMP ) VALUES ('{nombre_esp}' ,'{dato_temperatura}')"
-        conexiones_mysql.ejecutar_consulta(query)
+        conexiones_mysql.ejecutar_consulta(query, is_select=False)
         return "GOOD"
     return "BAD"
 
@@ -68,23 +68,12 @@ def obtener():
     if tiempo1 == tiempo2 :
         tiempo2 = tiempo2 + timedelta(days=1)
 
-
     #fechahoy= date.today().strftime("%Y-%m-%d")
     query = f" SELECT ESP, TEMP, DATE FROM Datos WHERE DATE >= '{tiempo1}' AND DATE <= '{tiempo2}'  AND '{nombresensor}' = ESP;"
     resultados=conexiones_mysql.ejecutar_consulta(query)
 
-    # Convertir los resultados a una lista de diccionarios para jsonify
-    lista_resultados = []
-    for resultado in resultados:
-        diccionario_resultado = {
-            'ESP': resultado[0],
-            'TEMPERATURA': resultado[1],
-            'FECHA': resultado[2].strftime("%Y-%m-%d")  # Formatear la fecha 
-        }
-        lista_resultados.append(diccionario_resultado)
-
     # Retornar los datos como JSON
-    return jsonify({"status": "GOOD", "data": lista_resultados})
+    return jsonify({"status": "GOOD", "data": resultados})
 
 
 
