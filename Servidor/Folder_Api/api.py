@@ -4,7 +4,7 @@
     Hecho por: Alejandro Rodríguez González.
 """
 
-from datetime import date, timedelta
+from datetime import timedelta, datetime
 import xml.etree.ElementTree as ET
 from flask import Flask, request, jsonify
 import conexiones_mysql
@@ -55,22 +55,22 @@ def insercion():
 @app.route('/obtain', methods=['GET'])
 def obtener():
     """Método para obtener datos que correspondan con los valores. 
-        tiempo1 --> Fecha mayor
-        tiempo2 --> Fecha menor
+        tiempo1 --> Fecha menor
+        tiempo2 --> Fecha mayor
 
     Returns:
         JSON: GOOD / BAD (strings)
     """
-    tiempo1=request.json['tiempo1']
-    tiempo2=request.json["tiempo2"]
+    tiempo1=datetime.strptime(request.json['tiempo1'], "%Y-%m-%d")
+    tiempo2=datetime.strptime(request.json['tiempo2'], "%Y-%m-%d")
     nombresensor=request.json["sensor"]
 
     if tiempo1 == tiempo2 :
-        tiempo2 = tiempo2 + timedelta(days=1)
+        tiempo1 += timedelta(days=1)
 
     #fechahoy= date.today().strftime("%Y-%m-%d")
     query = f" SELECT ESP, TEMP, DATE FROM Datos WHERE DATE >= '{tiempo1}' AND DATE <= '{tiempo2}'  AND '{nombresensor}' = ESP;"
-    resultados=conexiones_mysql.ejecutar_consulta(query)
+    resultados=conexiones_mysql.ejecutar_consulta(query, is_select=True)
 
     # Retornar los datos como JSON
     return jsonify({"status": "GOOD", "data": resultados})

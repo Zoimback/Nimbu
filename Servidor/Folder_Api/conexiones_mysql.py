@@ -2,9 +2,9 @@
 """
 
 from os import getenv
-from mysql.connector import pooling
 import json
-from datetime import date
+from mysql.connector import pooling
+
 
 # Configuración de la conexión a la base de datos MySQL
 db_params = {
@@ -40,15 +40,15 @@ def ejecutar_consulta(query, is_select):
                 row_data = {
                     'ESP': str(row[0]),
                     'TEMPERATURA': str(row[1]),
-                    'FECHA': str(row[2].strftime("%Y-%m-%d"))
+                    'FECHA': str(row[2].strftime("%Y-%m-%d %H:%M"))
                 }
                 rows.append(row_data)
 
             # Devolver los resultados como JSON
             return json.dumps(rows)
-        else:  # Si es una consulta de inserción, actualización o eliminación
-            connection.commit()
-            return json.dumps({"status": "OK", "message": "Operación realizada correctamente."})
+        # Si es una consulta de inserción, actualización o eliminación
+        connection.commit()
+        return json.dumps({"status": "OK", "message": "Operación realizada correctamente."})
 
     except Exception as e:
         print(f"Error: {e}")
