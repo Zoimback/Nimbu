@@ -4,8 +4,23 @@
     Hecho por: Alejandro Rodríguez González.
 """
 
-from flask import Flask, request
+from datetime import timedelta, datetime
+import xml.etree.ElementTree as ET
+from flask import Flask, request, jsonify
 import conexiones_mysql
+
+
+tree = ET.parse('/home/alex/Github/Nimbu/Servidor/Folder_Api/datos.xml')
+root = tree.getroot()
+
+
+maximo_element = root.find('maximo')
+minimo_element = root.find('minimo')
+
+# Obtener los valores máximo y mínimo
+maximo = float(maximo_element.text)
+minimo = float(minimo_element.text)
+
 
 
 # Crear una instancia de la aplicación Flask
@@ -17,9 +32,9 @@ def checker():
     """Check de la conexion al servidor y la version de la Api
 
     Returns:
-        int: 1 --> Version local de la Api 
+        string: GOOD --> Correcto funcionamiento de la api
     """
-    return 1
+    return 'GOOD'
 
 @app.route('/insert', methods=['POST'])
 def insercion():
@@ -28,15 +43,43 @@ def insercion():
     Returns:
         JSON: GOOD / BAD (strings)
     """
-    try:
-        nombre_esp=request.json['esp']
-        dato_temperatura=request.json["temp"]
+    nombre_esp=request.json['esp']
+    dato_temperatura=request.json["temp"]
+    if(dato_temperatura <= maximo)or(dato_temperatura >= minimo):
         query = f"INSERT INTO Datos (ESP, TEMP ) VALUES ('{nombre_esp}' ,'{dato_temperatura}')"
-        conexiones_mysql.ejecutar_consulta(query)
+        conexiones_mysql.ejecutar_consulta(query, is_select=False)
         return "GOOD"
-    except Exception as e:
-        print(str(e))
-        return "BAD"
+    return "BAD"
+
+
+@app.route('/obtain', methods=['GET'])
+def obtener():
+    """Método para obtener datos que correspondan con los valores. 
+        tiempo1 --> Fecha menor
+        tiempo2 --> Fecha mayor
+
+    Returns:
+        JSON: GOOD / BAD (strings)
+    """
+
+    nombresensor=request.json["sensor"]
+
+    tiempo1 = datetime.strptime(tiempo1, "%Y-%m-%d")
+    tiempo2 = datetime.strptime(tiempo2, "%Y-%m-%d") 
+
+    if tiempo1 == tiempo2:
+        tiempo2 += timedelta(days=1)
+        
+    # Convertir de nuevo a cadena con el formato adecuadoss
+    tiempo1 = tiempo1.strftime("%Y-%m-%d")
+    tiempo2 = tiempo2.strftime("%Y-%m-%d")
+
+    #fechahoy= date.today().strftime("%Y-%m-%d")
+    query = f" SELECT ESP, TEMP, DATE FROM Datos WHERE DATE >= '{tiempo1}' AND DATE <= '{tiempo2}'  AND '{nombresensor}' = ESP;"
+    resultados=conexiones_mysql.ejecutar_consulta(query, is_select=True)
+
+    # Retornar los datos como JSON
+    return jsonify({"status": "GOOD", "data": resultados})
 
 
 
